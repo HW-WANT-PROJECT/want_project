@@ -1,6 +1,7 @@
 package com.example.want.api.block.repository;
 import com.example.want.api.block.domain.Block;
 import com.example.want.api.block.domain.Category;
+import com.example.want.api.member.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

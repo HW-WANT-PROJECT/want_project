@@ -10,12 +10,14 @@ import com.example.want.api.heart.repository.HeartRepository;
 import com.example.want.api.member.domain.Member;
 import com.example.want.api.member.login.UserInfo;
 import com.example.want.api.member.repository.MemberRepository;
+import com.example.want.common.CommonResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,16 @@ public class BlockService {
         LocalDateTime startTime = LocalDateTime.parse(request.getStartTime(), formatter);
         LocalDateTime endTime = LocalDateTime.parse(request.getEndTime(), formatter);
         return blockRepository.save(request.toEntity(request.getLatitude(), request.getLongitude(), userInfo.getEmail(), startTime, endTime));
+    }
+
+    public Block blockDelete(UserInfo userInfo, Long id) {
+        Block block = blockRepository.findById(id).orElseThrow(()->new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        String blockMaster = block.getCreator();
+        if(!blockMaster.equals(userInfo.getEmail())){
+            throw new IllegalArgumentException("게시글은 작성자 본인만 삭제할 수 있습니다.");
+        }
+        blockRepository.delete(block);
+        return block;
     }
 
     public Page<BlockActiveListRsDto> getNotActiveBlockList(Pageable pageable, String memberEmail) {
@@ -176,4 +188,5 @@ public class BlockService {
     public Page<Block> getBlocksByCategory(Category category, Pageable pageable) {
         return blockRepository.findByCategory(category, pageable);
     }
+
 }

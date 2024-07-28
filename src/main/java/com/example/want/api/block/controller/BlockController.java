@@ -28,6 +28,13 @@ public class BlockController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "Success", block), HttpStatus.OK);
     }
 
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBlock(@AuthenticationPrincipal UserInfo userInfo, @PathVariable Long id){
+        Block deletedBlock = blockService.blockDelete(userInfo, id);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "Success", deletedBlock);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
     @GetMapping("/dis/active/list")
     public ResponseEntity<Object> getNotActiveBlockList(@PageableDefault(size = 10) Pageable pageable, @AuthenticationPrincipal String memberEmail) {
         Page<BlockActiveListRsDto> blockList = blockService.getNotActiveBlockList(pageable, memberEmail);
